@@ -1,0 +1,21 @@
+{
+  "name": "afterglow",
+  "version": "1.0.1",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "args": "^5.0.3",
+    "dayjs": "^1.11.10",
+    "kleur": "^4.1.5",
+    "log-update": "^6.0.0",
+    "prompts": "^2.4.2",
+    "serialport": "^12.0.0"
+  }
+}

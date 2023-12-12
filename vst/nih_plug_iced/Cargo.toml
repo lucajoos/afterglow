@@ -1,0 +1,69 @@
+[package]
+name = "nih_plug_iced"
+version = "0.0.0"
+edition = "2021"
+authors = ["Robbert van der Helm <mail@robbertvanderhelm.nl>"]
+license = "ISC"
+
+description = "An adapter to use iced GUIs with NIH-plug"
+
+[features]
+default = ["opengl"]
+
+# NOTE: wgpu support has been removed from the iced-baseview fork out because
+#       this old iced version uses a wgpu version that doesn't pin the web-sys
+#       version it uses, and web-sys broke semver
+# # Use wgpu rendering, which translates to Vulkan, Metal, or Direct3D12 depending
+# # on the platform.
+# # NOTE: The OpenGL support in baseview is not used, this is just a workaround
+# #       for a rust analyzer bug. See the comment in lib.rs.
+# wgpu = ["iced_baseview/wgpu", "baseview/opengl"]
+# Use OpenGL instead of wgpu for the rendering. This should increase platform
+# compatibility at the cost of some iced features not being available.
+opengl = ["iced_baseview/glow"]
+
+# Enables a debug view in native platforms (press F12)
+debug = ["iced_baseview/debug"]
+
+# # Enables the `Image` widget, only supported by the wgpu backend
+# wgpu_image = ["iced_baseview/wgpu_image"]
+# # Enables the `Svg` widget, only supported by the wgpu backend
+# wgpu_svg = ["iced_baseview/wgpu_svg"]
+
+# # Enables the `Canvas` widget for the wgpu backend
+# wgpu_canvas = ["iced_baseview/wgpu_canvas"]
+# Enables the `Canvas` widget for the OpenGL backend
+opengl_canvas = ["iced_baseview/glow_canvas"]
+
+# # Enables the `QRCode` widget for the wgpu backend
+# wgpu_qr_code = ["iced_baseview/wgpu_qr_code"]
+# Enables the `QRCode` widget for the OpenGL backend
+opengl_qr_code = ["iced_baseview/glow_qr_code"]
+
+# # Enables using system fonts for the wgpu backend
+# wgpu_default_system_font = ["iced_baseview/wgpu_default_system_font"]
+# Enables using system fonts for the OpenGL backend
+opengl_default_system_font = ["iced_baseview/glow_default_system_font"]
+
+# Enables advanced color conversion via `palette`
+palette = ["iced_baseview/palette"]
+
+# Enables `tokio` as the `executor::Default` on native platforms
+tokio = ["iced_baseview/tokio"]
+# Enables `async-std` as the `executor::Default` on native platforms
+async-std = ["iced_baseview/async-std"]
+# Enables `smol` as the `executor::Default` on native platforms
+smol = ["iced_baseview/smol"]
+
+[dependencies]
+nih_plug = { path = ".." }
+nih_plug_assets = { git = "https://github.com/robbert-vdh/nih_plug_assets.git" }
+
+atomic_refcell = "0.1"
+baseview = { git = "https://github.com/RustAudio/baseview.git" }
+crossbeam = "0.8"
+# Upstream doesn't work with the current iced version, this branch also contains
+# additional features
+iced_baseview = { git = "https://github.com/robbert-vdh/iced_baseview.git", branch = "feature/update-baseview", default_features = false }
+# To make the state persistable
+serde = { version = "1.0", features = ["derive"] }
