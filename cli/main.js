@@ -103,6 +103,7 @@ const panic = (message) => {
 
     const server = net.createServer();
     let number_of_packages = 0;
+    let number_of_lost_packages = 0;
     let time_of_last_package = new Date();
     let is_blocking_status = false;
     let is_first_note = true;
@@ -113,7 +114,7 @@ const panic = (message) => {
             let number_of_sockets = Object.values(sockets).length;
             let seconds_since_last_package = Math.floor((new Date().getTime() - time_of_last_package.getTime()) / 1000);
 
-            logUpdate(`\n ${kleur.cyan().bold("ⓘ")} ${kleur.white(` ${kleur[number_of_sockets > 0 ? 'green' : 'red']().bold(number_of_sockets)} Socket${number_of_sockets !== 1 ? 's' : ''}, ${kleur[number_of_packages > 0 ? 'green' : 'red']().bold(number_of_packages)} Package${number_of_packages !== 1 ? 's' : ''}`)}${number_of_packages > 0 && seconds_since_last_package >= 5 ? kleur.red().bold(` (last ${seconds_since_last_package > 59 ? dayjs(time_of_last_package).fromNow() : `${seconds_since_last_package}s ago`})`) : ''}\n\n`);
+            logUpdate(`\n ${kleur.cyan().bold("ⓘ")} ${kleur.white(` ${kleur[number_of_sockets > 0 ? 'green' : 'red']().bold(number_of_sockets)} Socket${number_of_sockets !== 1 ? 's' : ''}, ${number_of_packages === 0 || number_of_lost_packages === 0 ? kleur[number_of_packages > 0 ? 'green' : 'red']().bold(number_of_packages) : `${kleur[number_of_packages - number_of_lost_packages === 0 ? 'red' : 'green']().bold(number_of_packages - number_of_lost_packages)} / ${kleur[number_of_lost_packages === 0 ? 'green' : 'yellow']().bold(number_of_packages)}`} Package${number_of_packages !== 1 ? 's' : ''}`)}${number_of_lost_packages > 0 ? kleur.yellow().bold(` (lost ${number_of_lost_packages})`) : ''}${number_of_packages > 0 && seconds_since_last_package >= 5 ? kleur.red().bold(` (last ${seconds_since_last_package > 59 ? dayjs(time_of_last_package).fromNow() : `${seconds_since_last_package}s ago`})`) : ''}\n\n`);
         }
     }
 
@@ -188,10 +189,13 @@ const panic = (message) => {
         sockets[id] = socket;
 
         socket.on("data", data => {
+            let has_lost_package = false;
             data = data.toString().trim();
 
             if(data.length > 0 && data.startsWith("{") && data.endsWith("}")) {
-                data.split('}').filter((segment) => segment.trim().length > 0).map((segment) => `${segment}}`).forEach((segment) => {
+                const segments = data.split('}').filter((segment) => segment.trim().length > 0).map((segment) => `${segment}}`);
+
+                segments.forEach((segment, index) => {
                     try {
                         const parsed = JSON.parse(segment);
 
@@ -201,14 +205,25 @@ const panic = (message) => {
                             }
                         });
                     } catch (error) {
-                        warning("Received invalid formatted message.");
+                        warning("Received invalid formatted JSON message.");
+                        has_lost_package = true;
                     }
 
-                    number_of_packages += 1;
+                    if(index > 0) {
+                        number_of_packages += 1;
+                    }
                 });
-
-                time_of_last_package = new Date();
+            } else {
+                warning("Received invalid formatted message.");
+                has_lost_package = true;
             }
+
+            if(has_lost_package) {
+                number_of_lost_packages += 1;
+            }
+
+            number_of_packages += 1;
+            time_of_last_package = new Date();
         });
 
 
