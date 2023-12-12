@@ -3,7 +3,7 @@ Afterglow is a combination of different applications that makes it possible to
 send DMX signals from a DAW directly to the DMX receivers using VST3 plugins. 
 This requires three different pieces of software that communicate with each other.
 
-## VST v1.1.1
+## VST v1.2.0
 The `afterglow` VST3 plugin, which connects to the server as a client.
 The DMX signals can be created using DAW automation, for example.
 

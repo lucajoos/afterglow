@@ -1,5 +1,5 @@
 const CONSTANTS = {
-    VERSION: '1.0.1',
+    VERSION: '1.1.0',
 
     DEFAULT_HOST: '127.0.0.1',
     DEFAULT_PORT: 34254,
