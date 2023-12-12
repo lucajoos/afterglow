@@ -5,7 +5,7 @@ This requires three different pieces of software that communicate with each othe
 
 ## VST v1.1.0
 The `afterglow` VST3 plugin, which connects to the server as a client.
-The DMX signals can be created here using automation, for example.
+The DMX signals can be created using DAW automation, for example.
 
 ### Build
 Navigate to the `vst/` directory.
