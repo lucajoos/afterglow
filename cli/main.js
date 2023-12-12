@@ -97,7 +97,7 @@ const panic = (message) => {
         panic("Did not answer every available question.");
     }
 
-    if(!flags.y && !flags.yes) {
+    if(!flags.y && !flags.yes && !flags.q && !flags.quiet) {
         console.log();
     }
 
@@ -107,33 +107,33 @@ const panic = (message) => {
     let is_blocking_status = false;
     let is_first_note = true;
     let type_of_last_message = null;
-    let had_first_connection = false;
 
     const status = () => {
         if(!is_blocking_status && !flags.q && !flags.quiet) {
             let number_of_sockets = Object.values(sockets).length;
             let seconds_since_last_package = Math.floor((new Date().getTime() - time_of_last_package.getTime()) / 1000);
 
-            logUpdate(`\n ${kleur.cyan().bold("ⓘ")} ${kleur.white(` ${kleur[number_of_sockets > 0 ? 'green' : 'red']().bold(number_of_sockets)} Socket${number_of_sockets !== 1 ? 's' : ''}, ${kleur[number_of_packages > 0 ? 'green' : 'red']().bold(number_of_packages)} Package${number_of_packages !== 1 ? 's' : ''}`)}${had_first_connection && seconds_since_last_package >= 5 ? kleur.red().bold(` (last ${seconds_since_last_package > 59 ? dayjs(time_of_last_package).fromNow() : `${seconds_since_last_package}s ago`})`) : ''}\n\n`);
+            logUpdate(`\n ${kleur.cyan().bold("ⓘ")} ${kleur.white(` ${kleur[number_of_sockets > 0 ? 'green' : 'red']().bold(number_of_sockets)} Socket${number_of_sockets !== 1 ? 's' : ''}, ${kleur[number_of_packages > 0 ? 'green' : 'red']().bold(number_of_packages)} Package${number_of_packages !== 1 ? 's' : ''}`)}${number_of_packages > 0 && seconds_since_last_package >= 5 ? kleur.red().bold(` (last ${seconds_since_last_package > 59 ? dayjs(time_of_last_package).fromNow() : `${seconds_since_last_package}s ago`})`) : ''}\n\n`);
         }
     }
 
     const note = (message) => {
-        is_blocking_status = true;
-        logUpdate.clear();
+        if(!flags.q && !flags.quiet) {
+            is_blocking_status = true;
+            logUpdate.clear();
 
-        if(is_first_note) {
-            console.log();
-            is_first_note = false;
-        } else if(type_of_last_message !== 'note') {
-            console.log();
+            if(is_first_note) {
+                is_first_note = false;
+            } else if(type_of_last_message !== 'note') {
+                console.log();
+            }
+
+            log(message);
+
+            is_blocking_status = false;
+            type_of_last_message = 'note';
+            status();
         }
-
-        log(message);
-
-        is_blocking_status = false;
-        type_of_last_message = 'note';
-        status();
     }
 
     const warning = (message) => {
@@ -188,21 +188,27 @@ const panic = (message) => {
         sockets[id] = socket;
 
         socket.on("data", data => {
-            try {
-                const parsed = JSON.parse(data.toString());
+            data = data.toString().trim();
 
-                serial.write(`${parsed.channel}c${parsed.value}w`, 'utf-8', (error) => {
-                    if(error) {
-                        panic(`Could not write to serial device\n ${error.message}.`);
+            if(data.length > 0 && data.startsWith("{") && data.endsWith("}")) {
+                data.split('}').filter((segment) => segment.trim().length > 0).map((segment) => `${segment}}`).forEach((segment) => {
+                    try {
+                        const parsed = JSON.parse(segment);
+
+                        serial.write(`${parsed.channel}c${parsed.value}w`, 'utf-8', (error) => {
+                            if(error) {
+                                panic(`Could not write to serial device\n ${error.message}.`);
+                            }
+                        });
+                    } catch (error) {
+                        warning("Received invalid formatted message.");
                     }
-                });
-            } catch (error) {
-                warning("Received invalid formatted message.");
-            }
 
-            time_of_last_package = new Date();
-            number_of_packages += 1;
-            had_first_connection = true;
+                    number_of_packages += 1;
+                });
+
+                time_of_last_package = new Date();
+            }
         });
 
 
@@ -212,11 +218,6 @@ const panic = (message) => {
             note(`Socket ${kleur.bold().cyan(socket.remoteAddress)}:${kleur.bold().cyan(socket.remotePort)}: ${kleur.bold().red('DISCONNECTED')} `);
         });
 
-        is_blocking_status = true;
-        logUpdate.clear();
-
         note(`Socket ${kleur.bold().cyan(socket.remoteAddress)}:${kleur.bold().cyan(socket.remotePort)}: ${kleur.bold().green('CONNECTED')} `);
-
-        is_blocking_status = false;
     });
 })();
