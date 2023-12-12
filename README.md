@@ -18,7 +18,7 @@ Build the VST3 in the `target/bundled/` directory using the following command.
 cargo xtask bundle afterglow --release
 ```
 
-## CLI v1.0.1
+## CLI v1.1.0
 The command line interface for the `afterglow` server.
 This server serves as a bridge between the VST3 plugin and the arduino software.
 

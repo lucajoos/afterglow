@@ -119,47 +119,53 @@ impl Plugin for Afterglow {
         let channel = self.params.channel.value();
         let value = self.params.value.value();
 
-        if channel <= 512 && value < 256 {
-            let mut has_changed = false;
+        let mut has_changed = false;
+        let mut is_ok = true;
 
-            if self.previous_params.channel != channel {
-                self.previous_params.channel = channel;
-                has_changed = true;
+        if channel <= 512 && self.previous_params.channel != channel {
+            self.previous_params.channel = channel;
+            has_changed = true;
+        }
+
+        if value < 256 && self.previous_params.value != value {
+            self.previous_params.value = value;
+            has_changed = true;
+        }
+
+        if has_changed {
+            if self.stream.is_some() {
+                let mut stream = self.stream.as_ref().unwrap();
+
+                let was_successful = stream
+                    .write(
+                        serde_json::to_string(&self.previous_params).unwrap().as_bytes()
+                    ).is_ok();
+
+                if !was_successful {
+                    is_ok = false;
+                }
+            } else {
+                is_ok = false;
             }
+        }
 
-            if self.previous_params.value != value {
-                self.previous_params.value = value;
-                has_changed = true;
-            }
+        if !is_ok {
+            self.stream = None;
 
-            if has_changed {
-                let mut is_ok = true;
+            let stream = TcpStream::connect(&self.address);
 
-                if self.stream.is_some() {
+            if stream.is_ok() {
+                self.stream = Some(stream.unwrap());
+
+                if has_changed {
                     let mut stream = self.stream.as_ref().unwrap();
 
                     let was_successful = stream
                         .write(
                             serde_json::to_string(&self.previous_params).unwrap().as_bytes()
                         ).is_ok();
-
-                    if !was_successful {
-                        is_ok = false;
-                    }
-                } else {
-                    is_ok = false;
                 }
-
-                if !is_ok {
-                    self.stream = None;
-
-                    let stream = TcpStream::connect(&self.address);
-
-                    if stream.is_ok() {
-                        self.stream = Some(stream.unwrap());
-                    };
-                }
-            }
+            };
         }
 
         ProcessStatus::KeepAlive
