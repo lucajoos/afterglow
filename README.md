@@ -3,7 +3,7 @@ Afterglow is a combination of different applications that makes it possible to
 send DMX signals from a DAW directly to the DMX receivers using VST3 plugins. 
 This requires three different pieces of software that communicate with each other.
 
-## VST v1.2.0
+## VST v1.3.0
 The `afterglow` VST3 plugin, which connects to the server as a client.
 The DMX signals can be created using DAW automation, for example.
 
@@ -18,7 +18,7 @@ Build the VST3 in the `target/bundled/` directory using the following command.
 cargo xtask bundle afterglow --release
 ```
 
-## CLI v1.1.1
+## CLI v1.2.0
 The command line interface for the `afterglow` server.
 This server serves as a bridge between the VST3 plugin and the arduino software.
 

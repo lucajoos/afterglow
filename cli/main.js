@@ -192,14 +192,12 @@ const panic = (message) => {
             let has_lost_package = false;
             data = data.toString().trim();
 
-            if(data.length > 0 && data.startsWith("{") && data.endsWith("}")) {
-                const segments = data.split('}').filter((segment) => segment.trim().length > 0).map((segment) => `${segment}}`);
+            if(data.length > 0) {
+                const segments = data.split(' ').filter((segment) => segment.trim().length > 0);
 
                 segments.forEach((segment, index) => {
                     try {
-                        const parsed = JSON.parse(segment);
-
-                        serial.write(`${parsed.channel}c${parsed.value}w`, 'utf-8', (error) => {
+                        serial.write(segment, 'utf-8', (error) => {
                             if(error) {
                                 panic(`Could not write to serial device\n ${error.message}.`);
                             }

@@ -1,7 +1,7 @@
 #include <DmxSimple.h>
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 int value = 0;

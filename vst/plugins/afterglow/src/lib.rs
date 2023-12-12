@@ -138,7 +138,7 @@ impl Plugin for Afterglow {
 
                 let was_successful = stream
                     .write(
-                        serde_json::to_string(&self.previous_params).unwrap().as_bytes()
+                        format!("{}c{}w ", self.previous_params.channel, self.previous_params.value).as_bytes()
                     ).is_ok();
 
                 if !was_successful {
@@ -162,7 +162,7 @@ impl Plugin for Afterglow {
 
                     let was_successful = stream
                         .write(
-                            serde_json::to_string(&self.previous_params).unwrap().as_bytes()
+                            format!("{}c{}w ", self.previous_params.channel, self.previous_params.value).as_bytes()
                         ).is_ok();
                 }
             };
