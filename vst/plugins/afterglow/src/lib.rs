@@ -11,25 +11,25 @@ struct PreviousParams {
     value: i32
 }
 
-struct SchimmelLicht {
-    params: Arc<SchimmelLichtParams>,
+struct Afterglow {
+    params: Arc<AfterglowParams>,
     previous_params: PreviousParams,
     stream: Option<TcpStream>,
     address: String
 }
 
 #[derive(Params)]
-struct SchimmelLichtParams {
+struct AfterglowParams {
     #[id = "Channel"]
     channel: IntParam,
     #[id = "Value"]
     value: IntParam,
 }
 
-impl Default for SchimmelLicht {
+impl Default for Afterglow {
     fn default() -> Self {
         let address = "127.0.0.1:34254".to_string();
-        let params = SchimmelLichtParams::default();
+        let params = AfterglowParams::default();
         let previous_params = PreviousParams::default();
 
         Self {
@@ -50,7 +50,7 @@ impl Default for PreviousParams {
     }
 }
 
-impl Default for SchimmelLichtParams {
+impl Default for AfterglowParams {
     fn default() -> Self {
         Self {
             channel: IntParam::new("Channel", 0, IntRange::Linear { min: 1, max: 512 }),
@@ -59,8 +59,8 @@ impl Default for SchimmelLichtParams {
     }
 }
 
-impl Plugin for SchimmelLicht {
-    const NAME: &'static str = "SchimmelLicht";
+impl Plugin for Afterglow {
+    const NAME: &'static str = "Afterglow";
     const VENDOR: &'static str = "Luca Raúl Joos";
     const URL: &'static str = "https://lucajoos.de";
     const EMAIL: &'static str = "me@lucajoos.de";
@@ -166,8 +166,8 @@ impl Plugin for SchimmelLicht {
     }
 }
 
-impl Vst3Plugin for SchimmelLicht {
-    const VST3_CLASS_ID: [u8; 16] = *b"SchimmelLightPlu";
+impl Vst3Plugin for Afterglow {
+    const VST3_CLASS_ID: [u8; 16] = *b"_AfterglowPlugin";
     const VST3_SUBCATEGORIES: &'static [Vst3SubCategory] = &[
         Vst3SubCategory::Instrument,
         Vst3SubCategory::Synth,
@@ -175,4 +175,4 @@ impl Vst3Plugin for SchimmelLicht {
     ];
 }
 
-nih_export_vst3!(SchimmelLicht);
+nih_export_vst3!(Afterglow);

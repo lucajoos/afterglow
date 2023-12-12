@@ -1,6 +1,6 @@
 [package]
 name = "afterglow"
-version = "1.1.0"
+version = "1.1.1"
 edition = "2021"
 authors = ["Luca Raúl Joos <me@lucajoos.de>"]
 license = "MIT"

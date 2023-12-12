@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="EMPTY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/cargo_nih_plug/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/nih_plug_derive/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/nih_plug_derive/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/nih_plug_egui/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/nih_plug_iced/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/nih_plug_vizia/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/nih_plug_xtask/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/afterglow/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xtask/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
